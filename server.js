@@ -13,10 +13,13 @@ const hrRoutes    = require('./routes/humanresource');
 const deanRoutes  = require('./routes/dean');
 const profRoutes  = require('./routes/prof');
 
-const serviceAccount = require('./serviceAccountKey.json');
+require('dotenv').config();
+const admin = require('firebase-admin');
+
+const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY);
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://researchbacon-3cfd3-default-rtdb.asia-southeast1.firebasedatabase.app"
+  databaseURL: process.env.FIREBASE_DATABASE_URL
 });
 const db = admin.database();
 
