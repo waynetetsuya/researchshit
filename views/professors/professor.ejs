@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Professor Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
+    body { background:#1a1a1a; color:#fff; }
+
+    .main-content {
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      height: 80px;
+      background: #000;
+    }
+    .page-title { font-size: 24px; }
+    .user-info { display: flex; align-items: center; }
+    .user-name { margin-right: 15px; text-align: right; line-height: 1.2; }
+    .user-role {
+      background: #2c5e8a; color: #fff;
+      padding: 4px 8px; border-radius: 4px;
+      font-size: 12px; display: inline-block; margin-top: 4px;
+    }
+    .user-avatar {
+      width: 50px; height: 50px;
+      background: #fff; border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+    }
+
+    /* Live Check-In/Out */
+    .attendance-card {
+      background: #222; border-radius: 8px;
+      padding: 20px; margin-bottom: 20px;
+    }
+    .attendance-card h2 {
+      font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 10px; color: #fff;
+    }
+    .status-box {
+      background: #1a1a1a; padding: 15px; border-radius: 4px;
+      display:flex; justify-content: space-between; align-items: center;
+    }
+    .status-box p { margin:0; font-size:16px; font-weight:bold; }
+    .status-box .icon { font-size:20px; }
+
+    /* Time Logs */
+    .timelogs-card {
+      background: #222; border-radius:8px;
+      padding:20px; margin-bottom:20px;
+    }
+    .timelogs-card h2 {
+      font-size:14px; letter-spacing:1px; text-transform:uppercase;
+      text-align:center; margin-bottom:5px; color:#fff;
+    }
+    .timelogs-card .date {
+      text-align:center; font-size:12px; color:#ccc;
+      margin-bottom:15px;
+    }
+    .timelogs-table {
+      width:100%; border-collapse:collapse;
+    }
+    .timelogs-table th,
+    .timelogs-table td {
+      border:1px solid #444; padding:8px;
+      text-align:center; font-size:14px; color:#ddd;
+    }
+    .timelogs-table th {
+      background:#000; color:#fff;
+    }
+
+    /* Logout */
+    .logout-bottom { margin-top:auto; }
+    .logout-bottom a {
+      display:block; background:#600;
+      padding:15px 0; border-radius:24px;
+      text-align:center; color:#fff;
+      font-weight:bold; text-decoration:none;
+    }
+    .logout-bottom a:hover { background:#800; }
+
+    @media (max-width:480px) {
+      .timelogs-table th,
+      .timelogs-table td { padding:6px; font-size:12px; }
+      .logout-bottom a { padding:12px 0; font-size:14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+
+    <!-- Header -->
+    <div class="header">
+      <h1 class="page-title">Dashboard</h1>
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %>
+          <div class="user-role">Professor</div>
+        </div>
+        <div class="user-avatar">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M3 21v-2a7 7 0 0 1 14 0v2"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+     <div class="attendance-card">
+      <h2>You are Marked Present in Room 301!</h2>
+    </div>
+
+    <!-- Live Attendance -->
+    <div class="attendance-card">
+      <h2>Live Attendance</h2>
+      <div class="status-box">
+        <p>Check-In:</p>
+        <div class="icon" id="live-checkin">--:--:--</div>
+      </div>
+      <div class="status-box" style="margin-top:10px;">
+        <p>Check-Out:</p>
+        <div class="icon" id="live-checkout">--:--:--</div>
+      </div>
+    </div>
+
+    <!-- Time Logs -->
+    <div class="timelogs-card">
+      <h2>Today's Time Logs</h2>
+      <div class="date" id="today-label"></div>
+      <table class="timelogs-table">
+        <thead>
+          <tr><th>Time In</th><th>Time Out</th></tr>
+        </thead>
+        <tbody id="logs-body">
+          <tr><td colspan="2">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Logout -->
+    <div class="logout-bottom">
+      <a href="/logout">Logout</a>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const tbody = document.getElementById('logs-body');
+    const todayLabel = document.getElementById('today-label');
+
+    // set today's date label
+    const now = new Date();
+    todayLabel.innerText = now.toLocaleDateString('en-US', {
+      weekday:'long', month:'long', day:'numeric', year:'numeric'
+    });
+
+    // fetch & render today's check-in/out pairs
+    async function loadLogs() {
+      try {
+        const res = await fetch('/api/attendance/history');
+        const events = await res.json();
+        const rows = [];
+        let lastIn = null;
+        events.forEach(e => {
+          if (e.event === 'checkin') {
+            lastIn = new Date(e.timestamp).toLocaleTimeString();
+          } else if (e.event === 'checkout') {
+            rows.push({
+              in: lastIn || '--:--',
+              out: new Date(e.timestamp).toLocaleTimeString()
+            });
+            lastIn = null;
+          }
+        });
+        if (lastIn) {
+          rows.push({ in: lastIn, out: '--:--' });
+        }
+
+        tbody.innerHTML = '';
+        if (!rows.length) {
+          tbody.innerHTML = '<tr><td colspan="2">No logs for today</td></tr>';
+        } else {
+          rows.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${r.in}</td><td>${r.out}</td>`;
+            tbody.appendChild(tr);
+          });
+        }
+      } catch (e) {
+        console.error('Failed to load time logs:', e);
+      }
+    }
+
+    // live update of the two boxes
+    socket.on('attendanceUpdate', data => {
+      const t = new Date(data.timestamp).toLocaleTimeString();
+      if (data.event === 'checkin') {
+        document.getElementById('live-checkin').innerText = t;
+      } else {
+        document.getElementById('live-checkout').innerText = t;
+      }
+      loadLogs();
+    });
+
+    // initial
+    loadLogs();
+  </script>
+</body>
+</html>

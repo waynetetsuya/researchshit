@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>List of Professors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* RESET & BASE */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #121212;
+      color: #eee;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #1f1f1f, #2a2a2a);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    .logo-container {
+      width: 80px; height: 80px;
+      background: #333;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-container img {
+      width: 100%;
+    }
+    .nav-item {
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 12px;
+      color: #bbb;
+      transition: background 0.3s, color 0.3s;
+    }
+    .nav-item:hover,
+    .nav-item.active {
+      background: #444;
+      color: #fff;
+    }
+    .nav-icon { font-size: 20px; }
+
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      height: 80px;
+      padding: 0 30px;
+      background: linear-gradient(90deg, #2e2e2e, #252525);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .user-info {
+      display: flex; align-items: center; gap: 15px;
+    }
+    .user-name {
+      text-align: right;
+      line-height: 1.2;
+    }
+    .user-name div {
+      font-size: 14px;
+      color: #ccc;
+    }
+    .user-role {
+      background: #7158e2;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #fff;
+    }
+    .user-avatar {
+      width: 50px; height: 50px;
+      background: #eee;
+      border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      overflow: hidden;
+    }
+    .user-avatar svg {
+      stroke: #333;
+      width: 24px; height: 24px;
+    }
+
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    /* BACK BUTTON */
+    .back-button {
+      margin-bottom: 20px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      color: #888;
+      transition: color 0.3s;
+    }
+    .back-link:hover {
+      color: #fff;
+    }
+    .back-link svg {
+      stroke: currentColor;
+      width: 24px; height: 24px;
+    }
+
+    /* ACTION CARDS */
+    .action-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    .action-card {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .action-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    .action-icon {
+      width: 60px; height: 60px;
+      margin: 0 auto 15px;
+      background: #333;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .action-icon svg {
+      stroke: #ccc;
+      width: 36px; height: 36px;
+    }
+    .action-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+    .action-subtitle {
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    /* SEARCH */
+    .search-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #searchInput {
+      width: 98%;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: none;
+      background: #333;
+      color: #eee;
+      transition: background 0.3s;
+    }
+    #searchInput:focus {
+      background: #444;
+      outline: none;
+    }
+
+    /* CARD GRID */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: 30px;
+    }
+    .card {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    .avatar {
+      width: 60px; height: 60px;
+      margin: 0 auto 15px;
+      background: #444;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar svg {
+      stroke: #bbb;
+      width: 32px; height: 32px;
+    }
+    .card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .card p a {
+      color: #4aa8ff;
+      font-size: 14px;
+    }
+    .card button {
+      margin-top: 15px;
+      background: #7158e2;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+    .card button:hover {
+      background: #5a2c5a;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar { width: 70px; padding: 20px 10px; }
+      .nav-item span { display: none; }
+      .header { padding: 0 20px; }
+      .content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <img src="/IMAGES/CEULOGO.png" alt="Logo">
+    </div>
+    <a href="/dashboard" class="nav-item">
+      <div class="nav-icon">⊞</div><span>Dashboard</span>
+    </a>
+    <a href="/hr/professors" class="nav-item active">
+      <div class="nav-icon">👨‍🏫</div><span>Professors</span>
+    </a>
+    <div style="flex:1"></div>
+    <a href="/hr/settings" class="nav-item">
+      <div class="nav-icon">⚙️</div><span>Settings</span>
+    </a>
+    <a href="/logout" class="nav-item">
+      <div class="nav-icon">🚪</div><span>Log Out</span>
+    </a>
+    <a href="/help" class="nav-item">
+      <div class="nav-icon">❓</div><span>Help</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="page-title">List of Professors</div>
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %><br>
+          <div class="user-role">HR Manager</div>
+        </div>
+        <div class="user-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+      <div class="back-button">
+        <a href="/dashboard/hr" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+        </a>
+      </div>
+
+      <div class="action-cards">
+        <a href="/hr/register" class="action-card">
+          <div class="action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <circle cx="12" cy="8" r="5"></circle>
+              <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+              <circle cx="18" cy="18" r="5" fill="#2c5a43" stroke="#2c5a43"></circle>
+              <path d="M15 18l2 2 4-4" stroke="#fff" stroke-width="2"></path>
+            </svg>
+          </div>
+          <div class="action-title">REGISTER</div>
+          <div class="action-subtitle">Add a new professor</div>
+        </a>
+        <a href="/hr/disable" class="action-card">
+          <div class="action-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <circle cx="12" cy="8" r="5"></circle>
+              <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+              <circle cx="18" cy="18" r="5" fill="#a33" stroke="#a33"></circle>
+              <path d="M15 15l6 6M21 15l-6 6" stroke="#fff" stroke-width="2"></path>
+            </svg>
+          </div>
+          <div class="action-title">DISABLE</div>
+          <div class="action-subtitle">Deactivate a professor</div>
+        </a>
+      </div>
+
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search profiles…">
+      </div>
+
+      <div class="card-grid" id="cardGrid">
+        <% users.forEach(user => { %>
+          <div class="card">
+            <div class="avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                <circle cx="12" cy="8" r="5"></circle>
+                <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+              </svg>
+            </div>
+            <h3><%= user.firstname.toUpperCase() %> <%= user.lastname.toUpperCase() %></h3>
+            <p><a href="mailto:<%= user.email %>"><%= user.email %></a></p>
+            <a href="/HR/viewprofile?user=<%= user.username %>" class="btn btn-primary">View Profile</a>
+          </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // live search
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+      const term = this.value.toLowerCase();
+      document.querySelectorAll('.card-grid .card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(term) ? '' : 'none';
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit User - Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Additional styles for the edit form */
+    .edit-form-container {
+      background-color: #222;
+      border-radius: 10px;
+      padding: 30px;
+      width: 100%;
+      max-width: 800px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #aaa;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      background-color: #333;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 16px;
+    }
+    
+    .form-select {
+      width: 100%;
+      padding: 12px 15px;
+      background-color: #333;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 16px;
+    }
+    
+    .btn-container {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-primary {
+      background-color: #2c5a43;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #1c4933;
+    }
+    
+    .btn-secondary {
+      background-color: #444;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <div class="logo">CEU</div>
+    </div>
+    
+    <a href="/dashboard" class="nav-item">
+      <div class="nav-icon">⊞</div>
+      <span>Dashboard</span>
+    </a>
+    
+    <a href="/dashboard/notifications" class="nav-item">
+      <div class="nav-icon">🔔</div>
+      <span>Notifications</span>
+    </a>
+    
+    <a href="/dashboard/professors" class="nav-item">
+      <div class="nav-icon">👨‍🏫</div>
+      <span>Professors</span>
+    </a>
+    
+    <a href="/dashboard/accounts" class="nav-item active">
+      <div class="nav-icon">👥</div>
+      <span>Accounts</span>
+    </a>
+
+    <div class="spacer"></div>
+    
+    <a href="/dashboard/settings" class="nav-item">
+      <div class="nav-icon">⚙️</div>
+      <span>Settings</span>
+    </a>
+    
+    <a href="/logout" class="nav-item">
+      <div class="nav-icon">🚪</div>
+      <span>Log Out</span>
+    </a>
+    
+    <a href="/dashboard/help" class="nav-item">
+      <div class="nav-icon">❓</div>
+      <span>Help</span>
+    </a>
+  </div>
+  
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <h1 class="page-title">Edit User</h1>
+      
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %>
+          <div class="user-role">Administrator</div>
+        </div>
+        <div class="user-avatar">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M3 21v-2a7 7 0 0 1 14 0v2"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Content Area -->
+    <div class="content">
+      <div class="back-button">
+        <a href="/dashboard/accounts" class="back-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+          Back to Accounts
+        </a>
+      </div>
+      
+      <div class="edit-form-container">
+        <h2 style="margin-bottom: 20px;">Edit User Information</h2>
+        
+        <form action="/dashboard/users/update/<%= editUser.id %>" method="POST">
+          <div class="form-group">
+            <label for="firstname">First Name</label>
+            <input type="text" id="firstname" name="firstname" class="form-control" value="<%= editUser.firstname %>" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="lastname">Last Name</label>
+            <input type="text" id="lastname" name="lastname" class="form-control" value="<%= editUser.lastname %>" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" value="<%= editUser.username %>" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="<%= editUser.email %>" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role" name="role" class="form-select" required>
+              <option value="admin" <%= editUser.role === 'admin' ? 'selected' : '' %>>Administrator</option>
+              <option value="hr" <%= editUser.role === 'hr' ? 'selected' : '' %>>HR</option>
+              <option value="dean" <%= editUser.role === 'dean' ? 'selected' : '' %>>Dean</option>
+              <option value="professor" <%= editUser.role === 'professor' ? 'selected' : '' %>>Professor</option>
+            </select>
+          </div>
+          
+          <div class="btn-container">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="/dashboard/accounts" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

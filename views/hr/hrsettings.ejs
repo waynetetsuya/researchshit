@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { display: flex; min-height: 100vh; background: #121212; color: #eee; }
+    a { text-decoration: none; color: inherit; }
+
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #1f1f1f, #2a2a2a);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    .logo-container {
+      width: 80px; height: 80px;
+      background: #333;
+      border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      overflow: hidden;
+    }
+    .logo-container img { width: 100%; }
+    .nav-item {
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 12px;
+      color: #bbb;
+      transition: background 0.3s, color 0.3s;
+    }
+    .nav-item:hover, .nav-item.active { background: #444; color: #fff; }
+    .nav-icon { font-size: 20px; }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      height: 80px;
+      padding: 0 30px;
+      background: linear-gradient(90deg, #2e2e2e, #252525);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .page-title { font-size: 24px; font-weight: 500; color: #fff; }
+    .user-info { display: flex; align-items: center; gap: 15px; }
+    .user-role {
+      background: #7158e2;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #fff;
+    }
+    .user-avatar {
+      width: 50px; height: 50px;
+      background: #eee;
+      border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      overflow: hidden;
+    }
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+    .settings-form {
+      background: #1f1f1f;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      max-width: 600px;
+    }
+    .settings-form h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #bbb;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #333;
+      color: #fff;
+    }
+    .submit-btn {
+      background: #f5c518;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .submit-btn:hover {
+      background: #e0b417;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <img src="/IMAGES/CEULOGO.png" alt="Logo">
+    </div>
+    <a href="/dashboard/hr" class="nav-item">
+      <div class="nav-icon">⊞</div><span>Dashboard</span>
+    </a>
+    <a href="/hr/professors" class="nav-item">
+      <div class="nav-icon">👨‍🏫</div><span>Professors</span>
+    </a>
+    <a href="/hr/settings" class="nav-item active">
+      <div class="nav-icon">⚙️</div><span>Settings</span>
+    </a>
+    <a href="/logout" class="nav-item">
+      <div class="nav-icon">🚪</div><span>Log Out</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="header">
+      <div class="page-title">Settings</div>
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %><br>
+          <div class="user-role">HR</div>
+        </div>
+        <div class="user-avatar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="8" r="5" stroke="black"></circle>
+            <path d="M3 21v-2a7 7 0 0114 0v2" stroke="black"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <form class="settings-form" action="/hr/settings" method="POST">
+        <h2>Account Settings</h2>
+
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" name="username" value="<%= user.username %>" required>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" name="email" value="<%= user.email %>" required>
+        </div>
+
+        <div class="form-group">
+          <label>Change Password</label>
+          <input type="password" name="password" placeholder="New Password (leave blank to keep current)">
+        </div>
+
+        <button type="submit" class="submit-btn">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <% if (typeof success !== 'undefined') { %>
+    <script>
+      Swal.fire({
+        icon: 'info',
+        title: 'Notice',
+        text: "<%= success %>",
+        background: '#2c2c2c',
+        color: '#fff',
+        confirmButtonColor: '#f5c518'
+      });
+    </script>
+  <% } %>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HR Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* RESET & BASE */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: #121212;
+      color: #eee;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #1f1f1f, #2a2a2a);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    .logo-container {
+      width: 80px; height: 80px;
+      background: #333;
+      border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      overflow: hidden;
+    }
+    .logo-container img { width: 100%; }
+    .nav-item {
+      width: 100%;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: flex; align-items: center; gap: 12px;
+      color: #bbb;
+      transition: background 0.3s, color 0.3s;
+    }
+    .nav-item:hover,
+    .nav-item.active {
+      background: #444;
+      color: #fff;
+    }
+    .nav-icon { font-size: 20px; }
+
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .header {
+      height: 80px;
+      padding: 0 30px;
+      background: linear-gradient(90deg, #2e2e2e, #252525);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .page-title {
+      font-size: 24px;
+      font-weight: 500;
+      color: #fff;
+    }
+    .user-info {
+      display: flex; align-items: center; gap: 15px;
+    }
+    .user-name { text-align: right; line-height: 1.2; }
+    .user-name div { font-size: 14px; color: #ccc; }
+    .user-role {
+      background: #7158e2;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      color: #fff;
+    }
+    .user-avatar {
+      width: 50px; height: 50px;
+      background: #eee;
+      border-radius: 50%;
+      display: flex; justify-content: center; align-items: center;
+      overflow: hidden;
+    }
+    .user-avatar svg { stroke: #333; }
+
+    .content {
+      flex: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    /* CARDS & TABLES */
+    .dashboard-card, .stats-card, .action-card {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .dashboard-card + .stats-container,
+    .stats-container + .action-buttons {
+      margin-top: 30px;
+    }
+    .dashboard-card h2,
+    .stats-card h2 {
+      font-size: 18px;
+      color: #ddd;
+      margin-bottom: 15px;
+    }
+
+    .accounts-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .accounts-table th, .accounts-table td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+    .accounts-table th {
+      background: #2a2a2a;
+      color: #bbb;
+    }
+    .accounts-table tr:nth-child(even) {
+      background: #1f1f1f;
+    }
+    .accounts-table tr:hover {
+      background: #333;
+    }
+
+    /* STATUS BADGES */
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .status-active { background: #28a745; }
+    .status-inactive { background: #ff7f50; }
+
+    /* SEARCH */
+    .search-bar-container {
+      margin-bottom: 20px;
+      text-align: right;
+    }
+    #accountSearch {
+      width: 250px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: none;
+      background: #333;
+      color: #eee;
+    }
+
+    /* STATS GRID */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 30px;
+    }
+    .stats-card canvas {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ACTION BUTTONS */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+      gap: 30px;
+      margin-top: 20px;
+    }
+    .action-card {
+      text-align: center;
+      padding: 25px 20px;
+      transition: transform 0.3s;
+    }
+    .action-card:hover {
+      transform: translateY(-5px);
+      background: #2a2a2a;
+    }
+    .action-icon {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 15px;
+      stroke: #ccc;
+    }
+    .action-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #fff;
+    }
+    .action-subtitle {
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar { width: 70px; padding: 20px 10px; }
+      .nav-item span { display: none; }
+      .header { padding: 0 20px; }
+      .content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <img src="/IMAGES/CEULOGO.png" alt="Logo">
+    </div>
+    <a href="/dashboard" class="nav-item active">
+      <div class="nav-icon">⊞</div><span>Dashboard</span>
+    </a>
+    <a href="/hr/professors" class="nav-item">
+      <div class="nav-icon">👨‍🏫</div><span>Professors</span>
+    </a>
+    <div style="flex:1"></div>
+    <a href="/hr/settings" class="nav-item">
+      <div class="nav-icon">⚙️</div><span>Settings</span>
+    </a>
+    <a href="/logout" class="nav-item">
+      <div class="nav-icon">🚪</div><span>Log Out</span>
+    </a>
+    <a href="/help" class="nav-item">
+      <div class="nav-icon">❓</div><span>Help</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="page-title">Dashboard</div>
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %><br>
+          <div class="user-role">HR Manager</div>
+        </div>
+        <div class="user-avatar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="8" r="5" stroke-width="2"></circle>
+            <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+      <!-- Active Accounts Card -->
+      <div class="dashboard-card">
+        <h2>ACTIVE ACCOUNTS</h2>
+        <div class="search-bar-container">
+          <input type="text" id="accountSearch" placeholder="Search accounts...">
+        </div>
+        <table class="accounts-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach((u,i) => { %>
+              <tr>
+                <td><%= i+1 %></td>
+                <td><%= u.firstname %> <%= u.lastname %></td>
+                <td><%= u.email %></td>
+                <td>
+                  <span class="status-badge status-<%= u.status %>">
+                    <%= u.status.charAt(0).toUpperCase() + u.status.slice(1) %>
+                  </span>
+                </td>
+                <td>
+                  <a href="/hr/viewprofile?user=<%= u.username %>" style="background:#7158e2; color:white; padding:6px 12px; border-radius:8px; font-size:13px;">
+                    View Profile
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="stats-container">
+        <div class="stats-card">
+          <h2>GENDER DISTRIBUTION</h2>
+          <canvas id="genderPieChart"></canvas>
+        </div>
+        <div class="stats-card">
+          <h2>TOTAL PROFESSORS</h2>
+          <canvas id="totalProfChart" height="300"></canvas>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <a href="/applications" class="action-card">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke-width="1">
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path>
+          </svg>
+          <div class="action-title">VIEW</div>
+          <div class="action-subtitle">APPLICATIONS</div>
+        </a>
+        <a href="/hr/professors" class="action-card">
+          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke-width="1">
+            <circle cx="12" cy="7" r="5"></circle>
+            <path d="M3 21v-2a9 9 0 0118 0v2"></path>
+            <path d="M15 14l2 2 4-4"></path>
+          </svg>
+          <div class="action-title">MANAGE</div>
+          <div class="action-subtitle">EMPLOYEES</div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js & Search Script -->
+  <script>
+    // Search filter
+    document.getElementById('accountSearch').addEventListener('keyup', function () {
+      const term = this.value.toLowerCase();
+      document.querySelectorAll('.accounts-table tbody tr').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
+      });
+    });
+
+    // Charts
+    document.addEventListener("DOMContentLoaded", () => {
+      const male = <%= totalMales || 0 %>;
+      const female = <%= totalFemales || 0 %>;
+      const prof = <%= totalProfessors || 0 %>;
+
+      // Gender Pie
+      new Chart(
+        document.getElementById('genderPieChart'),
+        {
+          type: 'pie',
+          data: {
+            labels: ['Male', 'Female'],
+            datasets: [{
+              data: [male, female],
+              backgroundColor: ['#4285F4', '#EA4335'],
+              borderColor: '#121212',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom', labels: { color: '#ccc' } } }
+          }
+        }
+      );
+
+      // Total Professors Bar
+      new Chart(
+        document.getElementById('totalProfChart'),
+        {
+          type: 'bar',
+          data: {
+            labels: ['Professors'],
+            datasets: [{
+              label: 'Count',
+              data: [prof],
+              backgroundColor: ['#34A853'],
+              borderColor: ['#121212'],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#ccc', stepSize: 1 } },
+              x: { ticks: { color: '#ccc' } }
+            },
+            plugins: { legend: { display: false } }
+          }
+        }
+      );
+    });
+  </script>
+</body>
+</html>

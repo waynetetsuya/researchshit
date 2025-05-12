@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - CEU Attendance</title>
+
+  <!-- Mobile viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: #0e0e0e;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;      /* side padding on mobile */
+      overflow-y: auto;     /* allow scroll when keyboard pops */
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .login-container img {
+      width: 120px;
+      height: auto;
+      margin-bottom: 16px;
+    }
+
+    .login-container h2 {
+      font-weight: 600;
+      margin-bottom: 24px;
+      font-size: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #e0e0e0;
+      line-height: 1.2;
+    }
+
+    .form-section {
+      background: #1a1a1a;
+      padding: 32px 24px 48px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .form-section input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      border-radius: 25px;
+      border: none;
+      background: #2a2a2a;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+      transition: background .3s, box-shadow .3s;
+    }
+    .form-section input:focus {
+      background: #333;
+      box-shadow: 0 0 5px #4caf50;
+    }
+
+    .form-section button {
+      width: 100%;
+      padding: 14px 0;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(76,175,80,0.4);
+      transition: background .3s, transform .2s;
+    }
+    .form-section button:hover {
+      background-color: #43a047;
+      transform: translateY(-2px);
+    }
+
+    .forgot {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 16px;
+      color: #aaa;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .forgot:hover { color: #fff; }
+
+    /* Alert popup styling (unchanged) */
+    .popup-error {
+      position: fixed;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ff4d4d;
+      color: #fff;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 10000;
+      animation: fadeInSlideDown .5s ease-out;
+      font-size: 16px;
+      max-width: 90%;
+    }
+    .popup-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color .2s;
+    }
+    .popup-close:hover { color: #000; }
+    .popup-error.hide {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-20px);
+      transition: all .4s ease-in;
+      pointer-events: none;
+    }
+    @keyframes fadeInSlideDown {
+      from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* SMALLER SCREENS */
+    @media (max-width: 360px) {
+      .form-section { padding: 24px 16px 32px; }
+      .login-container h2 { font-size: 18px; margin-bottom: 16px; }
+      .form-section input { font-size: 14px; padding: 12px 14px; margin-bottom: 12px; }
+      .form-section button { font-size: 16px; padding: 12px 0; }
+      .forgot { font-size: 12px; margin-bottom: 12px; }
+      .login-container img { width: 100px; margin-bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <img src="/IMAGES/CEULOGO.png" alt="CEU Logo">
+    <h2>CEU Attendance<br>Tracking System</h2>
+
+    <div class="form-section">
+      <form method="POST" action="/login">
+        <input type="text" name="email" id="email" placeholder="Username or Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <a href="#" class="forgot">Forgot Password?</a>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+
+    <% if (messages && messages.length) { %>
+      <div class="popup-error">
+        <span class="popup-message"><%= messages[0] %></span>
+        <button class="popup-close" onclick="closePopup()">×</button>
+      </div>
+    <% } %>
+
+    <% if (error && error.length > 0) { %>
+      <div class="popup-error">
+        <span class="popup-message"><%= error[0] %></span>
+        <button class="popup-close" onclick="closePopup()">×</button>
+      </div>
+    <% } %>
+
+    <script>
+      function closePopup() {
+        document.querySelectorAll('.popup-error').forEach(el=>el.classList.add('hide'));
+      }
+      setTimeout(closePopup, 5000);
+    </script>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dean Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* RESET & BASE */
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { display:flex; min-height:100vh; background:#121212; color:#eee; }
+    a { text-decoration:none; color:inherit; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width:240px;
+      background:linear-gradient(180deg,#1f1f1f,#2a2a2a);
+      padding:30px 20px;
+      display:flex; flex-direction:column; align-items:center; gap:30px;
+    }
+    .logo-container {
+      width:80px; height:80px;
+      background:#333; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .logo-container img { width:100%; }
+    .nav-item {
+      width:100%; padding:12px 20px; border-radius:8px;
+      display:flex; align-items:center; gap:12px;
+      color:#bbb; transition:background .3s, color .3s;
+    }
+    .nav-item:hover, .nav-item.active { background:#444; color:#fff; }
+    .nav-icon { font-size:20px; }
+
+    /* MAIN CONTENT */
+    .main-content { flex:1; display:flex; flex-direction:column; }
+    .header {
+      height:80px; padding:0 30px;
+      background:linear-gradient(90deg,#2e2e2e,#252525);
+      display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 2px 8px rgba(0,0,0,0.5);
+    }
+    .page-title { font-size:24px; font-weight:500; color:#fff; }
+    .user-info { display:flex; align-items:center; gap:15px; }
+    .user-name { text-align:right; line-height:1.2; }
+    .user-name div { font-size:14px; color:#ccc; }
+    .user-role {
+      background:#7158e2; padding:4px 10px; border-radius:12px;
+      font-size:12px; color:#fff;
+    }
+    .user-avatar {
+      width:50px; height:50px; background:#eee; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+
+    .content { flex:1; padding:30px; overflow-y:auto; }
+
+    /* STATS GRID */
+    .stats-container {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:30px;
+    }
+    .stats-card {
+      background:#1f1f1f; border-radius:12px; padding:20px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4);
+      text-align:center;
+    }
+    .stats-card h2 { font-size:18px; color:#ddd; margin-bottom:15px; }
+    .stats-card .stat-number {
+      font-size:32px; color:#34A853; font-weight:bold;
+    }
+
+    /* RECENT ATTENDANCE */
+    .dashboard-card {
+      background:#1f1f1f; border-radius:12px; padding:20px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.4); margin-top:40px;
+    }
+    .dashboard-card h2 { font-size:18px; color:#ddd; margin-bottom:15px; }
+    .accounts-table {
+      width:100%; border-collapse:collapse; margin-top:15px;
+    }
+    .accounts-table th, .accounts-table td {
+      padding:10px; text-align:left;
+    }
+    .accounts-table th {
+      background:#2a2a2a; color:#bbb;
+    }
+    .accounts-table tr:nth-child(even){background:#1f1f1f;}
+    .accounts-table tr:hover{background:#333;}
+    .status-badge {
+      padding:4px 8px; border-radius:6px; font-size:12px; color:#fff;
+    }
+    .status-On\ Time { background:#28a745; }
+    .status-Late       { background:#ffc107; }
+    .status-Absent     { background:#dc3545; }
+
+    @media (max-width:768px){
+      .sidebar{width:70px; padding:20px 10px;}
+      .nav-item span{display:none;}
+      .header, .content{padding:20px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <img src="/IMAGES/CEULOGO.png" alt="Logo">
+    </div>
+    <a href="/dashboard/dean" class="nav-item active">
+      <div class="nav-icon">⊞</div><span>Dashboard</span>
+    </a>
+    <a href="/dean/professors" class="nav-item">
+      <div class="nav-icon">👨‍🏫</div><span>List of Professors</span>
+    </a>
+    <div style="flex:1"></div>
+    <a href="/dean/settings" class="nav-item">
+      <div class="nav-icon">⚙️</div><span>Settings</span>
+    </a>
+    <a href="/logout" class="nav-item">
+      <div class="nav-icon">🚪</div><span>Log Out</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="header">
+      <div class="page-title">Dashboard</div>
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %><br>
+          <div class="user-role">Dean</div>
+        </div>
+        <div class="user-avatar">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- STAT CARDS -->
+      <div class="stats-container">
+        <div class="stats-card">
+          <h2>Total Professors</h2>
+          <div class="stat-number"><%= professorCount %></div>
+        </div>
+        <div class="stats-card">
+          <h2>Present Today</h2>
+          <div class="stat-number"><%= attendanceTodayCount %></div>
+        </div>
+        <div class="stats-card">
+          <h2>Attendance Rate</h2>
+          <div class="stat-number"><%= attendanceRate %></div>
+        </div>
+      </div>
+
+      <!-- RECENT ATTENDANCE -->
+      <div class="dashboard-card">
+        <h2>Recent Attendance</h2>
+        <% if (recentAttendance.length) { %>
+          <table class="accounts-table">
+            <thead>
+              <tr>
+                <th>Professor</th><th>Date</th><th>Time In</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentAttendance.forEach(r => { %>
+                <tr>
+                  <td><%= r.professor %></td>
+                  <td><%= r.date %></td>
+                  <td><%= r.timeIn %></td>
+                  <td>
+                    <span class="status-badge status-<%= r.status.replace(' ', '\\ ') %>">
+                      <%= r.status %>
+                    </span>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        <% } else { %>
+          <p style="color:#888">No recent attendance records.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

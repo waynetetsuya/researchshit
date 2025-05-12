@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register a Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    /* RESET & BASE */
+    * { margin:0; padding:0; box-sizing:border-box;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      display:flex; min-height:100vh;
+      background:#121212; color:#eee;
+    }
+    a { text-decoration:none; color:inherit; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width:240px; background:linear-gradient(180deg,#1f1f1f,#2a2a2a);
+      padding:30px 20px; display:flex; flex-direction:column; gap:25px;
+    }
+    .logo-container {
+      width:80px; height:80px; margin:0 auto;
+      background:#333; border-radius:50%;
+      overflow:hidden; display:flex; align-items:center; justify-content:center;
+    }
+    .logo-container img { width:100%; }
+    .nav-item {
+      display:flex; align-items:center; gap:12px;
+      padding:12px 16px; border-radius:8px;
+      color:#bbb; transition:background 0.3s,color 0.3s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background:#444; color:#fff;
+    }
+    .nav-icon { font-size:20px; }
+
+    /* MAIN LAYOUT */
+    .main-content { flex:1; display:flex; flex-direction:column; }
+    .header {
+      height:80px; padding:0 30px;
+      background:linear-gradient(90deg,#2e2e2e,#252525);
+      display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 2px 8px rgba(0,0,0,0.5);
+    }
+    .page-title {
+      font-size:24px; font-weight:500; color:#fff;
+    }
+    .user-info {
+      display:flex; align-items:center; gap:15px;
+    }
+    .user-name {
+      text-align:right; line-height:1.2;
+      font-size:14px; color:#ccc;
+    }
+    .user-role {
+      background:#7158e2; padding:4px 10px;
+      border-radius:12px; font-size:12px; color:#fff;
+    }
+    .user-avatar {
+      width:50px; height:50px; background:#eee;
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .user-avatar svg { stroke:#333; width:24px; height:24px; }
+
+    .content {
+      flex:1; padding:30px; overflow-y:auto;
+    }
+
+    /* BACK BUTTON */
+    .back-button {
+      margin-bottom:20px;
+    }
+    .back-link {
+      display:inline-flex; align-items:center; gap:8px;
+      color:#888; transition:color 0.3s;
+      font-size:16px;
+    }
+    .back-link:hover { color:#fff; }
+    .back-link svg { stroke:currentColor; width:24px; height:24px; }
+
+    /* FORM CARD */
+    .form-card {
+      max-width:800px; margin:0 auto;
+      background:#1f1f1f; border-radius:12px;
+      padding:40px; box-shadow:0 4px 16px rgba(0,0,0,0.6);
+    }
+    .card-title {
+      text-align:center; font-size:28px; font-weight:600;
+      margin-bottom:30px; color:#fff;
+    }
+    .form-container {
+      display:flex; flex-wrap:wrap; gap:40px;
+    }
+    .avatar-container {
+      flex:0 0 150px;
+      display:flex; flex-direction:column; align-items:center; gap:15px;
+    }
+    .avatar {
+      width:130px; height:130px; background:#333;
+      border-radius:50%; display:flex; align-items:center; justify-content:center;
+    }
+    .avatar svg { stroke:#bbb; width:80px; height:80px; }
+
+    .form-fields {
+      flex:1; display:flex; flex-direction:column; gap:20px;
+    }
+    .form-group {
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .form-group label {
+      font-size:14px; color:#ccc;
+    }
+    .form-control {
+      padding:12px 16px; border:none; border-radius:8px;
+      background:#333; color:#eee; font-size:16px;
+      transition:box-shadow 0.3s;
+    }
+    .form-control:focus {
+      outline:none;
+      box-shadow:0 0 0 2px rgba(113,88,226,0.6);
+    }
+
+    /* SELECT & BUTTON */
+    .form-control.select {
+      appearance:none; background-image:url('data:image/svg+xml;utf8,<svg fill="%23eee" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat:no-repeat; background-position:right 12px center;
+      background-size:16px;
+    }
+    .submit-btn {
+      margin:30px auto 0; padding:12px 40px;
+      background:#7158e2; color:#fff; border:none; border-radius:8px;
+      font-size:16px; cursor:pointer;
+      transition:background 0.3s,transform 0.2s;
+      display:block;
+    }
+    .submit-btn:hover {
+      background:#5a2c5a; transform:translateY(-2px);
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      .nav-item span{display:none;}
+      .sidebar{width:70px;padding:20px 10px;}
+      .header{padding:0 20px;}
+      .content{padding:20px;}
+      .form-container{flex-direction:column;}
+      .avatar-container{margin:0 auto 20px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <img src="/IMAGES/CEULOGO.png" alt="Logo">
+    </div>
+    <a href="/dashboard" class="nav-item ">
+      <div class="nav-icon">⊞</div><span>Dashboard</span>
+    </a>
+    <a href="/notifications" class="nav-item">
+      <div class="nav-icon">🔔</div><span>Notifications</span>
+    </a>
+    <a href="/professors" class="nav-item">
+      <div class="nav-icon">👨‍🏫</div><span>Professors</span>
+    </a>
+    <a href="/accounts" class="nav-item active">
+      <div class="nav-icon">👥</div><span>Accounts</span>
+    </a>
+    <div style="flex:1"></div>
+    <a href="/settings" class="nav-item">
+      <div class="nav-icon">⚙️</div><span>Settings</span>
+    </a>
+    <a href="/logout" class="nav-item">
+      <div class="nav-icon">🚪</div><span>Log Out</span>
+    </a>
+    <a href="/help" class="nav-item">
+      <div class="nav-icon">❓</div><span>Help</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="page-title">Register a Profile</div>
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %><br>
+          <div class="user-role">Administrator</div>
+        </div>
+        <div class="user-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <!-- Back -->
+      <div class="back-button">
+        <a href="/accounts" class="back-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+          Back
+        </a>
+      </div>
+
+      <!-- Form Card -->
+      <div class="form-card">
+        <h2 class="card-title">ACCOUNT DETAILS</h2>
+        <form method="POST" action="/ADMINISTRATOR/register" class="form-container">
+          <!-- Avatar -->
+          <div class="avatar-container">
+            <div class="avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <circle cx="12" cy="10" r="8"></circle>
+                <path d="M4 21v-2a8 8 0 0116 0v2"></path>
+              </svg>
+            </div>
+          </div>
+          <!-- Fields -->
+          <div class="form-fields">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstname">First Name</label>
+                <input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" required>
+              </div>
+              <div class="form-group">
+                <label for="lastname">Last Name</label>
+                <input type="text" id="lastname" name="lastname" class="form-control" placeholder="Last Name" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="Enter Your Email" required>
+            </div>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" id="username" name="username" class="form-control" placeholder="Enter Username" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" class="form-control" placeholder="Enter Password" required>
+            </div>
+            <div class="form-group">
+              <label for="role">Role</label>
+              <select id="role" name="role" class="form-control select" required>
+                <option value="" disabled selected>Select a role</option>
+                <option value="hr">HR</option>
+                <option value="dean">Dean</option>
+                <option value="professor">Professor</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <button type="submit" class="submit-btn">Create Account</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback -->
+  <script>
+    <% if (typeof successMessage !== 'undefined') { %>
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: '<%= successMessage %>',
+        background: '#2c2c2c',
+        color: '#fff',
+        confirmButtonColor: '#7158e2'
+      });
+    <% } %>
+    <% if (typeof errorMessage !== 'undefined') { %>
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: '<%= errorMessage %>',
+        background: '#2c2c2c',
+        color: '#fff',
+        confirmButtonColor: '#e74c3c'
+      });
+    <% } %>
+  </script>
+</body>
+</html>

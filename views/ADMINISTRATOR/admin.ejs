@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* RESET & BASE */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      display: flex; min-height: 100vh;
+      background: #121212; color: #eee;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #1f1f1f, #2a2a2a);
+      padding: 30px 20px;
+      display: flex; flex-direction: column; gap: 25px;
+    }
+    .logo-container {
+      width: 80px; height: 80px;
+      margin: 0 auto;
+      background: #333; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .logo-container img { width: 100%; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border-radius: 8px;
+      color: #bbb; transition: background 0.3s, color 0.3s;
+    }
+    .nav-item.active,
+    .nav-item:hover {
+      background: #444; color: #fff;
+    }
+    .nav-icon { font-size: 20px; }
+
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1; display: flex; flex-direction: column;
+    }
+    .header {
+      height: 80px; padding: 0 30px;
+      background: linear-gradient(90deg, #2e2e2e, #252525);
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    .page-title {
+      color: #fff; font-size: 24px; font-weight: 500;
+    }
+    .user-info {
+      display: flex; align-items: center; gap: 15px;
+    }
+    .user-name {
+      text-align: right; line-height: 1.2;
+      font-size: 14px; color: #ccc;
+    }
+    .user-role {
+      background: #7158e2; padding: 4px 10px;
+      border-radius: 12px; font-size: 12px; color: #fff;
+    }
+    .user-avatar {
+      width: 50px; height: 50px;
+      background: #eee; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .user-avatar svg { stroke: #333; width: 24px; height: 24px; }
+
+    .content {
+      flex: 1; padding: 30px; overflow-y: auto;
+    }
+
+    /* PLACEHOLDER FOR WIDGETS */
+    .widget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 30px;
+      margin-top: 20px;
+    }
+    .widget-card {
+      background: #1f1f1f;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .widget-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    .widget-card h2 {
+      font-size: 18px; color: #ddd; margin-bottom: 15px;
+    }
+    .widget-card p {
+      font-size: 14px; color: #aaa;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 70px; padding: 20px 10px; }
+      .nav-item span { display: none; }
+      .header { padding: 0 20px; }
+      .content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-container">
+      <img src="/IMAGES/CEULOGO.png" alt="Logo">
+    </div>
+    <a href="/dashboard" class="nav-item active">
+      <div class="nav-icon">⊞</div><span>Dashboard</span>
+    </a>
+    <a href="/notifications" class="nav-item">
+      <div class="nav-icon">🔔</div><span>Notifications</span>
+    </a>
+    <a href="/professors" class="nav-item">
+      <div class="nav-icon">👨‍🏫</div><span>Professors</span>
+    </a>
+    <a href="/accounts" class="nav-item">
+      <div class="nav-icon">👥</div><span>Accounts</span>
+    </a>
+    <div style="flex:1"></div>
+    <a href="/settings" class="nav-item">
+      <div class="nav-icon">⚙️</div><span>Settings</span>
+    </a>
+    <a href="/logout" class="nav-item">
+      <div class="nav-icon">🚪</div><span>Log Out</span>
+    </a>
+    <a href="/help" class="nav-item">
+      <div class="nav-icon">❓</div><span>Help</span>
+    </a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="page-title">Dashboard</div>
+      <div class="user-info">
+        <div class="user-name">
+          <%= user.username.toUpperCase() %><br>
+          <div class="user-role">Administrator</div>
+        </div>
+        <div class="user-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <circle cx="12" cy="8" r="5"></circle>
+            <path d="M3 21v-2a7 7 0 0114 0v2"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+      <!-- Replace with your dashboard widgets -->
+      <div class="widget-grid">
+        <div class="widget-card">
+          <h2>Widget 1</h2>
+          <p>Some stats or chart here.</p>
+        </div>
+        <div class="widget-card">
+          <h2>Widget 2</h2>
+          <p>Some stats or chart here.</p>
+        </div>
+        <div class="widget-card">
+          <h2>Widget 3</h2>
+          <p>Some stats or chart here.</p>
+        </div>
+        <div class="widget-card">
+          <h2>Widget 4</h2>
+          <p>Some stats or chart here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
